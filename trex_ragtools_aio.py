@@ -12,7 +12,7 @@ def getLogger():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter(
-        '%(asctime)s [%(filename)s %(lineno)d] [%(levelname)s] : %(message)s')
+        '%(asctime)s [%(module)s %(lineno)d] [%(levelname)s] : %(message)s')
 
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
