@@ -4,7 +4,8 @@ import argparse
 import sys
 import logging
 import datetime
-import pathlib
+from pathlib import Path
+from action import Action
 
 
 def setLogHandler(log_handler, level, formatter, log_filter=None):
@@ -34,7 +35,7 @@ def setLogger(logger):
     setLogHandler(stream_handler, logging.INFO, default_formatter)
 
     now = datetime.datetime.now().strftime('%m-%d-%Y_%H_%M_%S')
-    pathlib.Path("./log").mkdir(parents=True, exist_ok=True)
+    Path("./log").mkdir(parents=True, exist_ok=True)
     file_handler = logging.FileHandler(f"./log/{now}.log")
     file_debug_handler = logging.FileHandler(f"./log/{now}.log")
     setLogHandler(file_handler, logging.INFO, default_formatter)
@@ -48,20 +49,50 @@ def setLogger(logger):
 
 def getArgs():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-name', help=' : Please set the name')
-    parser.add_argument('-option', help=' : train or prediction', default='train')
+    parser.add_argument('-action', help=' : set the type of action you want')
+    parser.add_argument('-json_filename', help=' : json file name')
+    parser.add_argument('-csv_filename', help=' : csv file name')
+    parser.add_argument('-basepath', help=' : base path of the dataset')
     args = parser.parse_args()
     return args
 
 
+def checkArgsValidation(args):
+    validate_args = {
+        "parseTestset" : {
+            "arguments" : [args.json_filename, args.csv_filename, args.basepath],
+            "path_validation_candidate" : [args.json_filename]
+        }
+    }
+
+    if args.action not in validate_args:
+        logger.error(f"Invalid action. Please choose from {', '.join(validate_args.keys())}")
+        return False
+
+    if all(validate_args[args.action]["arguments"]):
+        logger.error(f"Invalid arguments. Please check mandatory arguments.")
+        if all([Path(args.json_filename).exists() for path in validate_args[args.action]["path_validation_candidate"]]):
+            return True
+        else:
+            logger.error(f"Invalid path. Please check the path below.\n{validate_args[args.action]['path_validation_candidate']}")
+            return False
+    else:
+        return False
+
+
 def main(argv, args):
+    global logger
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     setLogger(logger)
-    logger.info(f'argv : {argv}')
-    logger.info(f'args : {args}')
-    logger.debug("test")
-    logger.warning("test")
+    action = Action(logger)
+
+    if checkArgsValidation(args):
+        pass
+    else:
+        exit(1)
+
+    getattr(action, args.action)(args)
 
 
 if __name__ == '__main__':
