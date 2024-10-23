@@ -1,5 +1,3 @@
-# Ragtools All In One
-
 import argparse
 import sys
 import logging
@@ -48,20 +46,82 @@ def setLogger(logger):
 
 
 def getArgs():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-action', help=' : set the type of action you want')
-    parser.add_argument('-json_filename', help=' : json file name')
-    parser.add_argument('-csv_filename', help=' : csv file name')
-    parser.add_argument('-basepath', help=' : base path of the dataset')
+    parser = argparse.ArgumentParser(add_help=False)
+    actions = [method for method in dir(Action) if callable(getattr(Action, method)) and not method.startswith('_')]
+    parser.add_argument('--help', action='store_true', help="Show this help message")
+    parser.add_argument('--action', type=str, required=True, help=f" : set the type of action you want.\
+        (available actions : {', '.join(actions)})")
+    # arguments for parseTestset action
+    parser.add_argument('--json_filename', type=str, help=' : json file name')
+    parser.add_argument('--csv_filename', type=str, help=' : csv file name')
+    parser.add_argument('--basepath', type=str, help=' : base path of the dataset')
+    # arguments for creatTestset action
+    parser.add_argument('--gpt_model', type=str, help=' : model name for the generator LLM')
+    parser.add_argument('--dataset_source_dir', type=str, help=' : directory path containing the Markdown files for the dataset')
+    parser.add_argument('--testset_test_size', type=int, help=' : size of the test set')
+    parser.add_argument('--testset_simple_ratio', type=float, help=' : ratio of simple examples in the test set')
+    parser.add_argument('--testset_reasoning_ratio', type=float, help=' : ratio of reasoning examples in the test set')
+    parser.add_argument('--testset_multi_complex_ratio', type=float, help=' : ratio of multi-context examples in the test set')
+    parser.add_argument('--testset_filename', type=str, help=' : path to save the generated test set')
+    printHelpMessageForEachAction(parser)
     args = parser.parse_args()
     return args
 
 
-def checkArgsValidation(args):
+def printHelpMessageForEachAction(parser):
+    args, unknown_args = parser.parse_known_args()
+    if args.help:
+        if args.action == 'createTestset':
+            print("""
+createTestset
+
+    This action generates a test set using the LangChain library and saves it to a file.
+
+    arguments:
+        --gpt_model (str): The model name for the generator LLM.
+        --dataset_source_dir (str): The directory path containing the Markdown files for the dataset.
+        --testset_test_size (int): The size of the test set.
+        --testset_simple_ratio (float): The ratio of simple examples in the test set.
+        --testset_reasoning_ratio (float): The ratio of reasoning examples in the test set.
+        --testset_multi_complex_ratio (float): The ratio of multi-context examples in the test set.
+        --testset_filename (str): The path to save the generated test set.
+            """)
+        elif args.action == 'parseTestset':
+            print("""
+parseTestset
+
+    Parses a JSON file containing a testset and saves it as a CSV file.
+
+    arguments:
+        --json_filename (str): The path to the input JSON file.
+        --basepath (str): The base path for modifying metadata.
+        --csv_filename (str): The path to save the output CSV file.
+            """)
+        else:
+            # Default help message when no option or unrecognized option is provided
+            parser.print_help()
+        sys.exit()
+
+
+def checkValidateArgs(args):
     validate_args = {
         "parseTestset" : {
-            "arguments" : [args.json_filename, args.csv_filename, args.basepath],
-            "path_validation_candidate" : [args.json_filename]
+            "arguments" : [
+                args.json_filename,
+                args.csv_filename,
+                args.basepath],
+            "path_validation_candidates" : [args.json_filename]
+        },
+        "createTestset" : {
+            "arguments" : [
+                args.gpt_model,
+                args.dataset_source_dir,
+                args.testset_test_size,
+                args.testset_simple_ratio,
+                args.testset_reasoning_ratio,
+                args.testset_multi_complex_ratio,
+                args.testset_filename],
+            "path_validation_candidates" : [args.dataset_source_dir]
         }
     }
 
@@ -70,13 +130,13 @@ def checkArgsValidation(args):
         return False
 
     if all(validate_args[args.action]["arguments"]):
-        logger.error(f"Invalid arguments. Please check mandatory arguments.")
-        if all([Path(args.json_filename).exists() for path in validate_args[args.action]["path_validation_candidate"]]):
+        if all([Path(path).exists() for path in validate_args[args.action]["path_validation_candidates"]]):
             return True
         else:
-            logger.error(f"Invalid path. Please check the path below.\n{validate_args[args.action]['path_validation_candidate']}")
+            logger.error(f"Invalid path. Please check the path below.\n{validate_args[args.action]['path_validation_candidates']}")
             return False
     else:
+        logger.error(f"Invalid arguments. Please check mandatory arguments.")
         return False
 
 
@@ -87,7 +147,9 @@ def main(argv, args):
     setLogger(logger)
     action = Action(logger)
 
-    if checkArgsValidation(args):
+    logger.debug(args)
+
+    if checkValidateArgs(args):
         pass
     else:
         exit(1)

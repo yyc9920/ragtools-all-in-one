@@ -33,11 +33,12 @@ def modifyMetadata(testset, base_path):
     list: The modified testset with updated 'metadata' fields.
     """
     for item in testset:
-        item['metadata'] = ' | '.join(
-            (key + ' : ' + value) for key, value in item['metadata'][0].items())
-        item['metadata'] = item['metadata'].replace(',', ' |')
-        item['metadata'] = item['metadata'].replace(base_path, '')
-        item['metadata'] = item['metadata'].replace('\\', '/')
+        if 'metadata' in item:
+            item['metadata'] = ' | '.join(
+                (key + ' : ' + value) for key, value in item['metadata'][0].items())
+            item['metadata'] = item['metadata'].replace(',', ' |')
+            item['metadata'] = item['metadata'].replace(base_path, '')
+            item['metadata'] = item['metadata'].replace('\\', '/')
 
     return testset
 
