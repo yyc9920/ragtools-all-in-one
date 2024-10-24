@@ -10,9 +10,14 @@ from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.testset import TestsetGenerator
 # from ragas.testset import simple, reasoning, multi_context
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from ragas.testset.synthesizers.specific_query import SpecificQuerySynthesizer
+from ragas.testset.synthesizers.abstract_query import ComparativeAbstractQuerySynthesizer
 from dotenv import load_dotenv
 
 load_dotenv()
+
+print(os.environ['OPENAI_API_KEY'])
+
 
 def load_markdown(data_path):
     with open(data_path, 'rb') as f:
@@ -115,53 +120,38 @@ def save_test_set(test_set, file_path):
     if not file_path.endswith(".json"):
         file_path += ".json"
 
-    df = test_set.to_pandas()
+    evaluation_dataset = test_set.to_evaluation_dataset()
 
-    if not df.empty:
-        json_data = df[['question', 'contexts', 'ground_truth', 'evolution_type', 'metadata']].to_dict(
-            orient='records')
-
-        # json_data가 주어진 데이터라고 가정
-        for data_ in json_data:
-            for key, val in data_.items():
-                if key == "contexts":
-                    data_["contexts"] = []  # contexts만 빈 리스트로 초기화
-            data_["answer"] = ""
-
-        try:
-            with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(json_data, f, indent=4)
-            print("Save to json file")
-            return True
-        except Exception as e:
-            print("Exception")
-            return False
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(evaluation_dataset.dict(), f, indent=4)
+    print(f"Save to json file : {file_path}")
 
 
-def main(source_dir, test_size, simple_ratio, reasoning_ratio, multi_complex_ratio, model, testset_filename):
+def main(source_dir, test_size, comparative_query_ratio, specific_query_ratio, model, testset_filename):
     generator_llm = ChatOpenAI(model=model)
     # critic_llm = LangchainLLMWrapper(ChatOpenAI(model="gpt-4o"))
     # embeddings = LangchainEmbeddingsWrapper(OpenAIEmbeddings())
     generator = TestsetGenerator.from_langchain(generator_llm)
     md_files = get_markdown_files(source_dir=source_dir)
+    ragas_llm = LangchainLLMWrapper(ChatOpenAI(model=model))
     test_set = generator.generate_with_langchain_docs(md_files,
                                                       testset_size=test_size,
-                                                      # distributions={simple: simple_ratio, reasoning: reasoning_ratio,
-                                                      #                multi_context: multi_complex_ratio},
+                                                      query_distribution=[
+                                                          (ComparativeAbstractQuerySynthesizer(llm=ragas_llm), comparative_query_ratio),
+                                                          (SpecificQuerySynthesizer(llm=ragas_llm), specific_query_ratio),],
                                                       with_debugging_logs=True)
-    save_successful = save_test_set(test_set=test_set, file_path=testset_filename)
+    save_test_set(test_set=test_set, file_path=testset_filename)
+
 
 if __name__ == "__main__":
-    source_dir = rf"/home/kendrick/workspace/project/ai_application/rag/data/exynos-ai-studio-docs-main"
+    source_dir = rf"/Users/yechanyun/YYC/work/project/AI_Application/rag/data/exynos-ai-studio-docs-main"
     # source_dir = rf"C:\\work\\project\\AI_Application\\rag\\data\\exynos-ai-studio-docs-main"
-    test_size = 1
-    simple_ratio = 1.0
-    reasoning_ratio = 0.0
-    multi_complex_ratio = 0.0
+    test_size = 10
+    simple_ratio = 0.5
+    reasoning_ratio = 0.5
     model = "gpt-4o-mini"
     print("given from test_set_creator.py")
 
     # main 함수 실행
-    main(source_dir=source_dir, test_size=test_size, simple_ratio=simple_ratio, reasoning_ratio=reasoning_ratio,
-         multi_complex_ratio=multi_complex_ratio,
+    main(source_dir=source_dir, test_size=test_size, comparative_query_ratio=simple_ratio, specific_query_ratio=reasoning_ratio,
          model=model, testset_filename="./sample.json")

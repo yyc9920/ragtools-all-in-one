@@ -59,9 +59,8 @@ def getArgs():
     parser.add_argument('--gpt_model', type=str, help=' : model name for the generator LLM')
     parser.add_argument('--dataset_source_dir', type=str, help=' : directory path containing the Markdown files for the dataset')
     parser.add_argument('--testset_test_size', type=int, help=' : size of the test set')
-    parser.add_argument('--testset_simple_ratio', type=float, help=' : ratio of simple examples in the test set')
-    parser.add_argument('--testset_reasoning_ratio', type=float, help=' : ratio of reasoning examples in the test set')
-    parser.add_argument('--testset_multi_complex_ratio', type=float, help=' : ratio of multi-context examples in the test set')
+    parser.add_argument('--testset_comparative_query_ratio', type=float, help=' : ratio of simple examples in the test set')
+    parser.add_argument('--testset_specific_query_ratio', type=float, help=' : ratio of reasoning examples in the test set')
     parser.add_argument('--testset_filename', type=str, help=' : path to save the generated test set')
     printHelpMessageForEachAction(parser)
     args = parser.parse_args()
@@ -81,9 +80,8 @@ createTestset
         --gpt_model (str): The model name for the generator LLM.
         --dataset_source_dir (str): The directory path containing the Markdown files for the dataset.
         --testset_test_size (int): The size of the test set.
-        --testset_simple_ratio (float): The ratio of simple examples in the test set.
-        --testset_reasoning_ratio (float): The ratio of reasoning examples in the test set.
-        --testset_multi_complex_ratio (float): The ratio of multi-context examples in the test set.
+        --testset_comparative_query_ratio (float): The ratio of comparative query examples in the test set.
+        --testset_specific_query_ratio (float): The ratio of specific query examples in the test set.
         --testset_filename (str): The path to save the generated test set.
             """)
         elif args.action == 'parseTestset':
@@ -117,9 +115,8 @@ def checkValidateArgs(args):
                 args.gpt_model,
                 args.dataset_source_dir,
                 args.testset_test_size,
-                args.testset_simple_ratio,
-                args.testset_reasoning_ratio,
-                args.testset_multi_complex_ratio,
+                args.testset_comparative_query_ratio,
+                args.testset_specific_query_ratio,
                 args.testset_filename],
             "path_validation_candidates" : [args.dataset_source_dir]
         }

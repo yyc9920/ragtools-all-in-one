@@ -8,10 +8,10 @@ nest_asyncio.apply()
 
 load_dotenv()
 
+
 class Action:
     def __init__(self, logger):
         self.logger = logger
-
 
     def createTestset(self, args):
         """
@@ -32,12 +32,10 @@ class Action:
         """
         main(args.dataset_source_dir,
              args.testset_test_size,
-             args.testset_simple_ratio,
-             args.testset_reasoning_ratio,
-             args.testset_multi_complex_ratio,
+             args.testset_comparative_query_ratio,
+             args.testset_specific_query_ratio,
              args.gpt_model,
              args.testset_filename)
-
 
     def parseTestset(self, args):
         """

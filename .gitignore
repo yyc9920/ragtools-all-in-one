@@ -10,6 +10,11 @@ pyvenv.cfg
 .venv
 pip-selfcheck.json
 
+### macOS ###
+*.DS_Store
+.AppleDouble
+.LSOverride
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -89,6 +94,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+share/
 
 # IPython
 profile_default/
