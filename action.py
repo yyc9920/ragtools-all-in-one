@@ -1,9 +1,9 @@
 import json
 from dotenv import load_dotenv
 from actions.parse_testset import *
-from actions.ragas_testset_creator import *
+from actions.ragas_testset_creator import RagasTestsetCreator
 from actions.ragas_context_generator import generateRagasContextAndAnswers
-from actions.ragas_evaluation import *
+from actions.ragas_evaluation import RagasEvaluationTestset
 import nest_asyncio
 
 nest_asyncio.apply()
@@ -30,8 +30,9 @@ class Action:
         Returns:
         None
         """
-        eval_results = evaluateTestset(args.json_filename, args.gpt_model)
-        saveEvaluationResult(eval_results, args.eval_result_filename)
+        ragasEval = RagasEvaluationTestset(self.logger)
+        eval_results = ragasEval.evaluateTestset(args.json_filename, args.gpt_model)
+        ragasEval.saveEvaluationResult(eval_results, args.eval_result_filename)
 
     def generateContext(self, args):
         """
@@ -45,7 +46,7 @@ class Action:
         Returns:
         None
         """
-        generateRagasContextAndAnswers(args.json_filename, args.testset_filename)
+        generateRagasContextAndAnswers(args.json_filename, args.testset_filename, self.logger)
 
     def createTestset(self, args):
         """
@@ -63,7 +64,8 @@ class Action:
         Returns:
         None
         """
-        main(args.dataset_source_dir,
+        ragasTestsetCreator = RagasTestsetCreator(self.logger)
+        ragasTestsetCreator.main(args.dataset_source_dir,
              args.testset_test_size,
              args.testset_comparative_query_ratio,
              args.testset_specific_query_ratio,
