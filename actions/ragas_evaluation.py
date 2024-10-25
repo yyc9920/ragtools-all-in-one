@@ -15,11 +15,18 @@ class RagasEvaluationTestset:
             json_data = json.load(f)
         eval_dataset = EvaluationDataset.from_dict(json_data["samples"])
         evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model=model))
-        metrics = [LLMContextRecall(), FactualCorrectness(), Faithfulness(), SemanticSimilarity()]
+        metrics = [
+            LLMContextRecall(),
+            FactualCorrectness(),
+            Faithfulness(),
+            SemanticSimilarity()]
         metrics_names = [m.name for m in metrics]
         self.logger.info("Start ragas evaluation with metrics below :")
         self.logger.info(f"{metrics_names}")
-        results = evaluate(dataset=eval_dataset, metrics=metrics, llm=evaluator_llm,)
+        results = evaluate(
+            dataset=eval_dataset,
+            metrics=metrics,
+            llm=evaluator_llm)
         self.logger.info("ragas evaluation Complete!!")
         self.logger.info("Scores :")
         self.logger.info(results.scores)

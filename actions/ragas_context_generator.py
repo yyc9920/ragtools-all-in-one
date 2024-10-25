@@ -12,9 +12,11 @@ def generateRagasContextAndAnswers(json_file_path, save_file_path, logger):
     evaluation_dataset_dict = evaluation_dataset.dict()
 
     for i, obj in enumerate(evaluation_dataset_dict["samples"]):
-        logger.info(f"Generating RAGAS json...({i+1}/{len(evaluation_dataset_dict['samples'])})")
+        logger.info(
+            f"Generating RAGAS json...({i+1}/{len(evaluation_dataset_dict['samples'])})")
         response = tg.answer_question(obj["user_input"])
-        obj.update({"retrieved_contexts": response["list"], "response": response["response"]})
+        obj.update(
+            {"retrieved_contexts": response["list"], "response": response["response"]})
 
     # JSON 파일 저장
     with open(save_file_path, "w") as f:
