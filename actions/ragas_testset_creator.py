@@ -141,7 +141,9 @@ class RagasTestsetCreator:
         test_set = generator.generate_with_langchain_docs(
             md_files, testset_size=test_size, query_distribution=[
                 (ComparativeAbstractQuerySynthesizer(
-                    llm=ragas_llm), comparative_query_ratio), (SpecificQuerySynthesizer(
-                        llm=ragas_llm), specific_query_ratio),], with_debugging_logs=True)
+                    llm=ragas_llm), comparative_query_ratio),
+                (SpecificQuerySynthesizer(
+                        llm=ragas_llm), specific_query_ratio),],
+            with_debugging_logs=True)
         self.logger.info("Generating ragas testset Complete!!")
         self.save_test_set(test_set=test_set, file_path=testset_filename)
