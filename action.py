@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from actions.parse_testset import *
 from actions.ragas_testset_creator import *
 from actions.ragas_context_generator import generateRagasContextAndAnswers
+from actions.ragas_evaluation import *
 import nest_asyncio
 
 nest_asyncio.apply()
@@ -13,6 +14,24 @@ load_dotenv()
 class Action:
     def __init__(self, logger):
         self.logger = logger
+
+    def evaluateTestset(self, args):
+        """
+        Evaluates the performance of a GPT model on a given testset.
+        evaluation metrics : LLMContextRecall, FactualCorrectness, Faithfulness, SemanticSimilarity
+        about ragas metrics : https://docs.ragas.io/en/v0.2.2/concepts/metrics/available_metrics/
+
+        Parameters:
+        args (argparse.Namespace): An object containing command-line arguments.
+            - args.json_filename (str): The path to the input JSON file containing the testset.
+            - args.gpt_model (str): The name of the GPT model to be evaluated.
+            - args.eval_result_filename (str): The path to save the generated evaluation result.
+
+        Returns:
+        None
+        """
+        eval_results = evaluateTestset(args.json_filename, args.gpt_model)
+        saveEvaluationResult(eval_results, args.eval_result_filename)
 
     def generateContext(self, args):
         """
