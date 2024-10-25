@@ -1,0 +1,13 @@
+{
+    "action": "evaluateTestset",
+    "json_filename": ".\\data\\sample_with_context.json",
+    "csv_filename": "",
+    "basepath": "",
+    "gpt_model": "gpt-4o-mini",
+    "dataset_source_dir": "",
+    "testset_test_size": 100,
+    "testset_comparative_query_ratio": 0.3,
+    "testset_specific_query_ratio": 0.7,
+    "testset_filename": "testset.json",
+    "eval_result_filename": ".\\data\\eval_result_.json"
+}
