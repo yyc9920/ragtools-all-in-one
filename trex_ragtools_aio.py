@@ -59,8 +59,8 @@ def getArgs():
     parser.add_argument('--gpt_model', type=str, help=' : model name for the generator LLM')
     parser.add_argument('--dataset_source_dir', type=str, help=' : directory path containing the Markdown files for the dataset')
     parser.add_argument('--testset_test_size', type=int, help=' : size of the test set')
-    parser.add_argument('--testset_comparative_query_ratio', type=float, help=' : ratio of simple examples in the test set')
-    parser.add_argument('--testset_specific_query_ratio', type=float, help=' : ratio of reasoning examples in the test set')
+    parser.add_argument('--testset_comparative_query_ratio', type=float, help=' : ratio of comparative query examples in the test set')
+    parser.add_argument('--testset_specific_query_ratio', type=float, help=' : ratio ofspecific query examples in the test set')
     parser.add_argument('--testset_filename', type=str, help=' : path to save the generated test set')
     printHelpMessageForEachAction(parser)
     args = parser.parse_args()
@@ -95,6 +95,16 @@ parseTestset
         --basepath (str): The base path for modifying metadata.
         --csv_filename (str): The path to save the output CSV file.
             """)
+        elif args.action == 'generateContext':
+            print("""
+generateContext
+
+    Generates context for Ragas using a JSON file containing testset and saves it to a file.
+
+    arguments:
+        --json_filename (str): The path to the input JSON file containing the testset.
+        --testset_filename (str): The path to save the generated context file.
+            """)
         else:
             # Default help message when no option or unrecognized option is provided
             parser.print_help()
@@ -119,6 +129,12 @@ def checkValidateArgs(args):
                 args.testset_specific_query_ratio,
                 args.testset_filename],
             "path_validation_candidates" : [args.dataset_source_dir]
+        },
+        "generateContext" : {
+            "arguments" : [
+                args.json_filename,
+                args.testset_filename],
+            "path_validation_candidates" : [args.json_filename]
         }
     }
 

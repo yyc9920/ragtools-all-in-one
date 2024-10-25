@@ -8,15 +8,15 @@ from langchain_text_splitters import CharacterTextSplitter
 from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.testset import TestsetGenerator
-# from ragas.testset import simple, reasoning, multi_context
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from ragas.testset.synthesizers.specific_query import SpecificQuerySynthesizer
 from ragas.testset.synthesizers.abstract_query import ComparativeAbstractQuerySynthesizer
 from dotenv import load_dotenv
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
-
-print(os.environ['OPENAI_API_KEY'])
 
 
 def load_markdown(data_path):
@@ -129,8 +129,6 @@ def save_test_set(test_set, file_path):
 
 def main(source_dir, test_size, comparative_query_ratio, specific_query_ratio, model, testset_filename):
     generator_llm = ChatOpenAI(model=model)
-    # critic_llm = LangchainLLMWrapper(ChatOpenAI(model="gpt-4o"))
-    # embeddings = LangchainEmbeddingsWrapper(OpenAIEmbeddings())
     generator = TestsetGenerator.from_langchain(generator_llm)
     md_files = get_markdown_files(source_dir=source_dir)
     ragas_llm = LangchainLLMWrapper(ChatOpenAI(model=model))

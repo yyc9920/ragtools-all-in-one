@@ -1,4 +1,8 @@
 import csv
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def removeInvalidGroundTruths(testset):
     """
@@ -63,5 +67,3 @@ def saveDictToCsv(dict_data, filename):
 
         for item in dict_data:
             writer.writerow(item)
-
-
