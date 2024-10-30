@@ -1,12 +1,5 @@
 import json
 from dotenv import load_dotenv
-from actions.parse_testset import *
-from actions.ragas_testset_creator import RagasTestsetCreator
-from actions.ragas_context_generator import generateRagasContextAndAnswers
-from actions.ragas_evaluation import RagasEvaluationTestset
-import nest_asyncio
-
-nest_asyncio.apply()
 
 load_dotenv()
 
@@ -26,6 +19,7 @@ class Action:
             --gpt_model (str): The name of the GPT model to be evaluated.
             --eval_result_filename (str): The path to save the generated evaluation result.
         """
+        from actions.ragas_evaluation import RagasEvaluationTestset
         ragasEval = RagasEvaluationTestset(self.logger)
         eval_results = ragasEval.evaluateTestset(
             args.json_filename, args.gpt_model)
@@ -39,6 +33,7 @@ class Action:
             --json_filename (str): The path to the input JSON file containing the testset.
             --testset_filename (str): The path to save the generated context file.
         """
+        from actions.ragas_context_generator import generateRagasContextAndAnswers
         generateRagasContextAndAnswers(
             args.json_filename,
             args.testset_filename,
@@ -56,6 +51,7 @@ class Action:
             --testset_specific_query_ratio(float): The ratio ofspecific query examples in the test set.
             --testset_filename (str): The path to save the generated test set.
         """
+        from actions.ragas_testset_creator import RagasTestsetCreator
         ragasTestsetCreator = RagasTestsetCreator(self.logger)
         ragasTestsetCreator.main(args.dataset_source_dir,
                                  args.testset_test_size,
@@ -73,6 +69,7 @@ class Action:
             --basepath (str): The base path for modifying metadata.
             --csv_filename (str): The path to save the output CSV file.
         """
+        from actions.parse_testset import removeInvalidGroundTruths, modifyMetadata, saveDictToCsv
         with open(args.json_filename, 'rt', encoding='UTF8') as file:
             testset = json.load(file)
         testset_without_invalid_gt = removeInvalidGroundTruths(testset)
