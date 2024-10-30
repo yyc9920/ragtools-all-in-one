@@ -1,13 +1,13 @@
 {
-    "action": "generateContext",
-    "json_filename": ".\\data\\sample.json",
+    "action": "createTestset",
+    "json_filename": ".\\testset_with_context.json",
     "csv_filename": "",
     "basepath": "",
     "gpt_model": "gpt-4o-mini",
     "dataset_source_dir": "C:\\work\\project\\AI_Application\\rag\\data\\exynos-ai-studio-docs-main",
-    "testset_test_size": 10,
+    "testset_test_size": 2,
     "testset_comparative_query_ratio": 0.5,
     "testset_specific_query_ratio": 0.5,
     "testset_filename": "testset.json",
-    "eval_result_filename": ".\\data\\eval_result_.json"
+    "eval_result_filename": ".\\eval_result.json"
 }

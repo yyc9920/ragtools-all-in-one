@@ -45,7 +45,7 @@ class RagasTestsetCreator:
                 if not doc.metadata:
                     doc.metadata = {}
                 # Document 객체의 metadata 속성에 파일명 추가
-                doc.metadata["domain"] = domain
+                doc.metadata["location"] = domain
 
             return documents
 
@@ -69,7 +69,7 @@ class RagasTestsetCreator:
                 if not doc.metadata:
                     doc.metadata = {}
                 # Document 객체의 metadata 속성에 파일명 추가
-                doc.metadata["domain"] = domain
+                doc.metadata["location"] = domain
 
             return documents
 
@@ -119,6 +119,7 @@ class RagasTestsetCreator:
         if not file_path.endswith(".json"):
             file_path += ".json"
 
+        self.logger.info(f"Test set : {json.dumps(test_set.dict()['samples'][-1], indent=4)}")
         evaluation_dataset = test_set.to_evaluation_dataset()
 
         with open(file_path, 'w', encoding='utf-8') as f:
@@ -136,12 +137,18 @@ class RagasTestsetCreator:
         generator_llm = ChatOpenAI(model=model)
         generator = TestsetGenerator.from_langchain(generator_llm)
         md_files = self.get_markdown_files(source_dir=source_dir)
+        self.logger.info(md_files[-1])
         ragas_llm = LangchainLLMWrapper(ChatOpenAI(model=model))
         self.logger.info("Generating ragas testset")
         test_set = generator.generate_with_langchain_docs(
             md_files, testset_size=test_size, query_distribution=[
                 (ComparativeAbstractQuerySynthesizer(
-                    llm=ragas_llm), comparative_query_ratio), (SpecificQuerySynthesizer(
-                        llm=ragas_llm), specific_query_ratio),], with_debugging_logs=True)
+                    llm=ragas_llm), comparative_query_ratio),
+                (SpecificQuerySynthesizer(
+                        llm=ragas_llm), specific_query_ratio),],
+            with_debugging_logs=True)
         self.logger.info("Generating ragas testset Complete!!")
+        self.logger.info(test_set)
         self.save_test_set(test_set=test_set, file_path=testset_filename)
+
+        return test_set, generator
