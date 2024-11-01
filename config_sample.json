@@ -1,15 +1,15 @@
 {
     "action": "evaluateTestset",
-    "json_filename": "C:\\work\\project\\AI_Application\\rag\\source\\ragtools-all-in-one\\data\\sample_with_context.json",
+    "json_filename": "C:\\work\\project\\AI_Application\\rag\\source\\ragas_evaluation\\241101\\testset_one.json",
     "csv_filename": "",
     "basepath": "",
-    "gpt_model": "gpt-4o-mini",
+    "gpt_model": "gpt-4o",
     "dataset_source_dir": "C:\\work\\project\\AI_Application\\rag\\data\\exynos-ai-studio-docs-main",
     "testset_test_size": 2,
     "testset_comparative_query_ratio": 0.5,
     "testset_specific_query_ratio": 0.5,
     "testset_filename": "testset.json",
-    "eval_result_filename": ".\\eval_result_iter_sample.json",
+    "eval_result_filename": ".\\eval_result.json",
     "eval_metrics": ["LLMContextRecall", "FactualCorrectness", "Faithfulness", "SemanticSimilarity"],
     "eval_iterations": 3
 }

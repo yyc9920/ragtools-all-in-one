@@ -35,7 +35,7 @@ class Action:
         for i in range(len(scores_store[0])):
             total = {}
             for metric in eval_results.scores[0].keys():
-                total += {metric: 0}
+                total.update({metric: 0})
 
             for score in scores_store:
                 for metric in eval_results.scores[0].keys():
@@ -43,7 +43,7 @@ class Action:
 
             average = {}
             for metric in eval_results.scores[0].keys():
-                average += {metric: total[metric] / len(scores_store)}
+                average.update({metric: total[metric] / len(scores_store)})
 
             summed_scores.append(average)
 
