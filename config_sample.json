@@ -10,5 +10,6 @@
     "testset_specific_query_ratio": 0.5,
     "testset_filename": "testset.json",
     "eval_result_filename": ".\\eval_result_iter_sample.json",
+    "eval_metrics": ["LLMContextRecall", "FactualCorrectness", "Faithfulness", "SemanticSimilarity"],
     "eval_iterations": 3
 }

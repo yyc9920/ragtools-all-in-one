@@ -11,13 +11,13 @@ class Action:
     def evaluateTestset(self, args):
         """
         Evaluates the performance of a GPT model on a given testset.
-        evaluation metrics : LLMContextRecall, FactualCorrectness, Faithfulness, SemanticSimilarity
         about ragas metrics : https://docs.ragas.io/en/v0.2.2/concepts/metrics/available_metrics/
 
         Arguments:
             --json_filename (str): The path to the input JSON file containing the testset.
             --gpt_model (str): The name of the GPT model to be evaluated.
             --eval_result_filename (str): The path to save the generated evaluation result.
+            --eval_metrics (list): The list of evaluation metrics
             --eval_iterations (int): Number of evaluation iterations
         """
         from actions.ragas_evaluation import RagasEvaluationTestset
@@ -25,35 +25,26 @@ class Action:
 
         scores_store = []
         summed_scores = []
-        for _ in range(args.eval_iterations):
-            self.logger.info(f"Evaluating... (iter {i+1}/{args.eval_iterations})")
+        for i in range(args.eval_iterations):
+            self.logger.info(
+                f"Evaluating... (iter {i+1}/{args.eval_iterations})")
             eval_results = ragasEval.evaluateTestset(
-                args.json_filename, args.gpt_model)
+                args.json_filename, args.gpt_model, args.eval_metrics)
             scores_store.append(eval_results.scores)
 
         for i in range(len(scores_store[0])):
-            total = {
-                'context_recall': 0,
-                'factual_correctness': 0,
-                'faithfulness': 0,
-                'semantic_similarity': 0
-            }
-            
-            # Sum the scores from each list
+            total = {}
+            for metric in eval_results.scores[0].keys():
+                total += {metric: 0}
+
             for score in scores_store:
-                total['context_recall'] += score[i]['context_recall']
-                total['factual_correctness'] += score[i]['factual_correctness']
-                total['faithfulness'] += score[i]['faithfulness']
-                total['semantic_similarity'] += score[i]['semantic_similarity']
-            
-            # Calculate the average
-            average = {
-                'context_recall': total['context_recall'] / len(scores_store),
-                'factual_correctness': total['factual_correctness'] / len(scores_store),
-                'faithfulness': total['faithfulness'] / len(scores_store),
-                'semantic_similarity': total['semantic_similarity'] / len(scores_store)
-            }
-            
+                for metric in eval_results.scores[0].keys():
+                    total[metric] += score[i][metric]
+
+            average = {}
+            for metric in eval_results.scores[0].keys():
+                average += {metric: total[metric] / len(scores_store)}
+
             summed_scores.append(average)
 
         eval_results.scores = summed_scores
