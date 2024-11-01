@@ -1,6 +1,6 @@
 {
-    "action": "createTestset",
-    "json_filename": ".\\testset_with_context.json",
+    "action": "evaluateTestset",
+    "json_filename": "C:\\work\\project\\AI_Application\\rag\\source\\ragtools-all-in-one\\data\\sample_with_context.json",
     "csv_filename": "",
     "basepath": "",
     "gpt_model": "gpt-4o-mini",
@@ -9,5 +9,6 @@
     "testset_comparative_query_ratio": 0.5,
     "testset_specific_query_ratio": 0.5,
     "testset_filename": "testset.json",
-    "eval_result_filename": ".\\eval_result.json"
+    "eval_result_filename": ".\\eval_result_iter_sample.json",
+    "eval_iterations": 3
 }

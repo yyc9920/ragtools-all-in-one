@@ -1,3 +1,6 @@
+log/
+local_data/
+
 # Virtualenv
 .Python
 [Bb]in

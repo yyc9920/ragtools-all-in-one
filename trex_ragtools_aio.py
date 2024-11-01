@@ -104,6 +104,10 @@ def getArgs():
         '--eval_result_filename',
         type=str,
         help=' : path to save the generated evaluation result')
+    parser.add_argument(
+        '--eval_iterations',
+        type=int,
+        help=' : number of evaluation iterations')
     printHelpMessageForEachAction(parser)
     args = parser.parse_args()
 
@@ -171,7 +175,8 @@ def checkValidateArgs(args):
         "evaluateTestset": {
             "arguments": [
                 args.json_filename,
-                args.eval_result_filename],
+                args.eval_result_filename,
+                args.eval_iterations],
             "path_validation_candidates": [args.json_filename]
         }
     }
