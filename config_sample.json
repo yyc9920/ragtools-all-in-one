@@ -1,6 +1,6 @@
 {
     "action": "evaluateTestset",
-    "json_filename": "C:\\work\\project\\AI_Application\\rag\\source\\ragas_evaluation\\241101\\testset_one.json",
+    "json_filename": "C:\\work\\project\\AI_Application\\rag\\source\\ragas_evaluation\\241101\\sample_testSet.json",
     "csv_filename": "",
     "basepath": "",
     "gpt_model": "gpt-4o",

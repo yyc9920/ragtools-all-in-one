@@ -93,14 +93,8 @@ class Action:
 
         Arguments:
             --json_filename (str): The path to the input JSON file.
-            --basepath (str): The base path for modifying metadata.
             --csv_filename (str): The path to save the output CSV file.
+            --eval_metrics (list): The list of evaluation metrics
         """
-        from actions.parse_testset import removeInvalidGroundTruths, modifyMetadata, saveDictToCsv
-        with open(args.json_filename, 'rt', encoding='UTF8') as file:
-            testset = json.load(file)
-        testset_without_invalid_gt = removeInvalidGroundTruths(testset)
-        testset_parsed = modifyMetadata(
-            testset_without_invalid_gt, args.basepath)
-        saveDictToCsv(testset_parsed, args.csv_filename)
-        self.logger.info(f"Parsed testset saved as csv in {args.csv_filename}")
+        from actions.parse_testset.v2 import main
+        main(args.json_filename, args.csv_filename, args.eval_metrics, self.logger)

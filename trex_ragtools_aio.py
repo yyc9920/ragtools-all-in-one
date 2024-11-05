@@ -157,7 +157,7 @@ def checkValidateArgs(args):
             "arguments": [
                 args.json_filename,
                 args.csv_filename,
-                args.basepath],
+                args.eval_metrics],
             "path_validation_candidates": [args.json_filename]
         },
         "createTestset": {

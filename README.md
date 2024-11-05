@@ -28,13 +28,28 @@ Copy `.env_template` to `.env` and fill the env variables.
 OPENAI_API_KEY=[my_openai_key]
 ```
 
-### nltk Setup
+### Setup nltk
 
 Run `nltk_download.py` script once for the first time to download nltk tools.
 
 ```bash
 python nltk_download.py
 ```
+
+### Setup trex_ai_chatbot_tools
+
+```bash
+git clone git@[pangyo_gitlab_server_ip]:exsol/crossroads/phase-1.git
+cd phase-1
+git checkout embedding_to_gpt
+mv trex_ai_chatbot_tools /path/to/python/env/lib/site-packages
+```
+
+### Setup embedding DocDB server
+
+This setup must be preceded by the [generateContext](#actions) action.
+
+Download [this](https://dev-aistudio-artifact-bucket.s3.ap-northeast-2.amazonaws.com/DocumentDB+Local+Setup.pdf) guide document and follow the instructions.
 
 ## User Guide
 
@@ -46,7 +61,8 @@ You can check the full help message like below.
 python trex_ragtools_aio.py --help
 usage: trex_ragtools_aio.py [--help] [--json_config JSON_CONFIG] [--action ACTION] [--json_filename JSON_FILENAME] [--csv_filename CSV_FILENAME] [--basepath BASEPATH] [--gpt_model GPT_MODEL]
                             [--dataset_source_dir DATASET_SOURCE_DIR] [--testset_test_size TESTSET_TEST_SIZE] [--testset_comparative_query_ratio TESTSET_COMPARATIVE_QUERY_RATIO]
-                            [--testset_specific_query_ratio TESTSET_SPECIFIC_QUERY_RATIO] [--testset_filename TESTSET_FILENAME] [--eval_result_filename EVAL_RESULT_FILENAME]
+                            [--testset_specific_query_ratio TESTSET_SPECIFIC_QUERY_RATIO] [--testset_filename TESTSET_FILENAME] [--eval_result_filename EVAL_RESULT_FILENAME] [--eval_metrics EVAL_METRICS]
+                            [--eval_iterations EVAL_ITERATIONS]
 
 options:
   --help                Show this help message
@@ -72,6 +88,10 @@ options:
                         : path to save the generated test set
   --eval_result_filename EVAL_RESULT_FILENAME
                         : path to save the generated evaluation result
+  --eval_metrics EVAL_METRICS
+                        : list of evaluation metrics
+  --eval_iterations EVAL_ITERATIONS
+                        : number of evaluation iterations
 ```
 
 ### Actions
@@ -122,13 +142,11 @@ evaluateTestset
             --json_filename (str): The path to the input JSON file containing the testset.
             --gpt_model (str): The name of the GPT model to be evaluated.
             --eval_result_filename (str): The path to save the generated evaluation result.
+            --eval_metrics (list): The list of evaluation metrics
+            --eval_iterations (int): Number of evaluation iterations
 ```
 
-- parseTestset (TBD)
-
-Due to ragas version update(v0.1.10 => v0.2.1), this action would not executed as expected.
-
-It would be modified in the near future.
+- parseTestset
 
 ```bash
 python trex_ragtools_aio.py --action parseTestset --help
@@ -138,8 +156,8 @@ parseTestset
 
         Arguments:
             --json_filename (str): The path to the input JSON file.
-            --basepath (str): The base path for modifying metadata.
             --csv_filename (str): The path to save the output CSV file.
+            --eval_metrics (list): The list of evaluation metrics
 ```
 
 ### Arguments Examples
@@ -176,7 +194,9 @@ Write the `config.json` file like below.
     "testset_comparative_query_ratio": 0.5,
     "testset_specific_query_ratio": 0.5,
     "testset_filename": "./testset.json",
-    "eval_result_filename": "./eval_result.json"
+    "eval_result_filename": "./eval_result.json",
+    "eval_metrics": ["LLMContextRecall", "FactualCorrectness", "Faithfulness", "SemanticSimilarity"],
+    "eval_iterations": 3
 }
 ```
 
